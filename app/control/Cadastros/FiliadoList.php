@@ -115,13 +115,13 @@ class FiliadoList extends TPage
     $panel->add($this->form);
     $panel->addFooter($this->pageNavigation);
 
-    $dropdown = new TDropDown('Exportar', 'fa:list');
-    $dropdown->setButtonClass('btn btn-default waves-effect dropdown-toggle');
-    $dropdown->addAction('Salvar como CSV', new TAction([$this, 'onExportCSV'], ['register_state' => 'false', 'static' => '1']), 'fa:table fa-fw blue');
-    $dropdown->addAction('Salvar como PDF', new TAction([$this, 'onExportPDF'], ['register_state' => 'false', 'static' => '1']), 'far:file-pdf fa-fw red');
-    $dropdown->addAction('Salvar como XML', new TAction([$this, 'onExportXML'], ['register_state' => 'false', 'static' => '1']), 'fa:code fa-fw green');
+    // $dropdown = new TDropDown('Exportar', 'fa:list');
+    // $dropdown->setButtonClass('btn btn-default waves-effect dropdown-toggle');
+    // $dropdown->addAction('Salvar como CSV', new TAction([$this, 'onExportCSV'], ['register_state' => 'false', 'static' => '1']), 'fa:table fa-fw blue');
+    // $dropdown->addAction('Salvar como PDF', new TAction([$this, 'onExportPDF'], ['register_state' => 'false', 'static' => '1']), 'far:file-pdf fa-fw red');
+    // $dropdown->addAction('Salvar como XML', new TAction([$this, 'onExportXML'], ['register_state' => 'false', 'static' => '1']), 'fa:code fa-fw green');
 
-    $panel->addHeaderWidget($dropdown);
+    // $panel->addHeaderWidget($dropdown);
     $panel->addHeaderActionLink('Novo', new TAction(['FiliadoForm', 'onClear'], ['register_state' => 'false']), 'fa:plus green');
 
     parent::add($panel);
