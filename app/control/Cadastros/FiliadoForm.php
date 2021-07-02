@@ -11,6 +11,7 @@ use Adianti\Widget\Form\TDate;
 use Adianti\Widget\Form\TEntry;
 use Adianti\Widget\Form\TFieldList;
 use Adianti\Widget\Form\TForm;
+use Adianti\Widget\Form\THidden;
 use Adianti\Widget\Form\TLabel;
 use Adianti\Widget\Form\TRadioGroup;
 use Adianti\Widget\Wrapper\TDBCheckGroup;
@@ -30,6 +31,11 @@ class FiliadoForm extends TPage
 
     $this->form = new BootstrapFormBuilder('form_filiado');
     $this->form->setFormTitle('Filiado');
+
+    $estadoH = new THidden('estadoHidden');
+    $estadoH->setId('estadoH');
+    $cidadeH = new THidden('cidadeHidden');
+    $cidadeH->setId('cidadeH');
 
     $id   = new TEntry('id');
     $inscricao = new TEntry('numero_da_inscricao');
@@ -106,6 +112,8 @@ class FiliadoForm extends TPage
     $this->form->addFields([new TLabel('Sigla do Partido')], [$sigla_partido], [new TLabel('Nome do Partido')], [$nome_partido],);
     $this->form->addFields([new TLabel('UF')], [$uf]);
     $this->form->addFields([new TLabel('Município')], [$municipio], [new TLabel('Cód. Municipio')], [$codigo_municipio]);
+    
+    $this->form->addFields([$estadoH], [$cidadeH]);
 
     $this->form->appendPage('Outras informações');
     $this->form->addFields([new TLabel('Zona Eleitoral')], [$zona_eleitoral], [new TLabel('Seção Eleitoral')], [$secao_eleitoral]);
@@ -136,8 +144,8 @@ class FiliadoForm extends TPage
               var name = state.nome;
               var initial = state.sigla;
               var id = state.id;
-
-              $('#estado').append('<option value='+name+' data-id='+id+'>'+name+'</option>');
+ 
+              $('#estado').append('<option value='+name+' data-id='+id+' '+( $('#estadoH').val().length > 0 && $('#estadoH').val() == name ? \"selected\" : \"\" )+' >'+name+'</option>');
 
             }
 
@@ -186,14 +194,22 @@ class FiliadoForm extends TPage
               var idCity = city.id;
               
               var nameCity = document.createElement(\"option\");
-              nameCity.setAttribute(\"value\", idCity);
+              nameCity.setAttribute(\"value\", name);
+              nameCity.setAttribute(\"data-id\", idCity);
+
+              console.log($('#cidadeH').val());
+              console.log(name);
+
+              if( $('#cidadeH ').val() == name )
+                nameCity.setAttribute(\"selected\", \"selected\");
+
               nameCity.innerText = name;
 
               selectCities.appendChild(nameCity);
               
             }
 
-            $('#codMunicipio').val( $('#cidade').val() );
+            $('#codMunicipio').val( $('#cidade > option:selected').attr('data-id') );
 
           },
           error:function() {
@@ -204,7 +220,7 @@ class FiliadoForm extends TPage
       }
 
       function changeCity() {
-        $('#codMunicipio').val( $('#cidade').val() );
+        $('#codMunicipio').val( $('#cidade > option:selected').attr('data-id') );
       }
 
     ");
@@ -251,6 +267,11 @@ class FiliadoForm extends TPage
         $filiado = new FiliadosPartido($param['key']);
 
         $this->form->setData($filiado);
+
+        TScript::create("
+          $('#estadoH').val('".$filiado->uf."');
+          $('#cidadeH').val('".$filiado->nome_do_municipio."');
+        ");
 
         TTransaction::close();
       } else {
