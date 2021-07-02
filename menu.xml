@@ -117,9 +117,15 @@
             </menuitem>
         </menu>
     </menuitem>
-    
+
+    <menuitem label='Filiados'>
+        <icon>fas:users fa-fw</icon>
+        <action>FiliadoList</action>
+    </menuitem>
+
     <menuitem label='Logout'>
         <action>LoginForm#method=onLogout#static=1</action>
         <icon>fas:sign-out-alt fa-fw</icon>
     </menuitem>
+
 </menu>
