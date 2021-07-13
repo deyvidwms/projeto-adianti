@@ -145,7 +145,7 @@ class FiliadoForm extends TPage
               var initial = state.sigla;
               var id = state.id;
  
-              $('#estado').append('<option value='+name+' data-id='+id+' '+( $('#estadoH').val().length > 0 && $('#estadoH').val() == name ? \"selected\" : \"\" )+' >'+name+'</option>');
+              $('#estado').append('<option value=\"'+name+'\" data-id='+id+' '+( $('#estadoH').val().length > 0 && $('#estadoH').val() == name ? \"selected\" : \"\" )+' >'+name+'</option>');
 
             }
 

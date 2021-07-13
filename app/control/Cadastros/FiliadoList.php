@@ -33,29 +33,39 @@ class FiliadoList extends TPage
     $this->addFilterField('numero_da_inscricao', '=', 'numero_da_inscricao');
     $this->addFilterField('nome_do_afiliado', 'like', 'nome_do_afiliado');
     $this->addFilterField('nome_do_partido', 'like', 'nome_do_partido');
+    $this->addFilterField('situacao_do_registro', '=', 'situacao_do_registro');
 
     $this->datagrid = new BootstrapDatagridWrapper(new TDataGrid);
-    $this->datagrid->style = 'width:100%';
+    $this->datagrid->width = '100%;';
+    $this->datagrid->style = 'min-width: 1500px;';
 
-    $col_id               = new TDataGridColumn('id', 'ID do Filiado', 'center', '28%');
-    $col_numero_inscricao = new TDataGridColumn('numero_da_inscricao', 'Num. Inscrição', 'center', '28%');
-    $col_nome             = new TDataGridColumn('nome_do_afiliado', 'Nome', 'center', '28%');
-    $col_partido          = new TDataGridColumn('nome_do_partido', 'Partido', 'center', '28%');
+    $col_id               = new TDataGridColumn('id', 'ID do Filiado', 'center', '10%');
+    $col_numero_inscricao = new TDataGridColumn('numero_da_inscricao', 'Num. Inscrição', 'center', '20%');
+    $col_nome             = new TDataGridColumn('nome_do_afiliado', 'Nome', 'center', '20%');
+    $col_partido          = new TDataGridColumn('nome_do_partido', 'Partido', 'center', '20%');
+    $col_situacao          = new TDataGridColumn('situacao_do_registro', 'Situação', 'center', '20%');
 
     $col_id->setAction(new TAction([$this, 'onReload']), ['order' => 'id']);
+    $col_numero_inscricao->setAction(new TAction([$this, 'onReload']), ['order' => 'numero_da_inscricao']);
     $col_nome->setAction(new TAction([$this, 'onReload']), ['order' => 'nome_do_afiliado']);
     $col_partido->setAction(new TAction([$this, 'onReload']), ['order' => 'nome_do_partido']);
+    $col_situacao->setAction(new TAction([$this, 'onReload']), ['order' => 'situacao_do_registro']);
 
     $this->datagrid->addColumn($col_id);
     $this->datagrid->addColumn($col_numero_inscricao);
     $this->datagrid->addColumn($col_nome);
     $this->datagrid->addColumn($col_partido);
+    $this->datagrid->addColumn($col_situacao);
 
     $action1 = new TDataGridAction(['FiliadoForm', 'onEdit'], ['key' => '{id}', 'register_state' => 'false']);
     $action2 = new TDataGridAction([$this, 'onDelete'], ['key' => '{id}']);
 
+    
     $this->datagrid->addAction($action1, 'Editar', 'fa:edit blue');
     $this->datagrid->addAction($action2, 'Excluir', 'fa:trash-alt red');
+    
+    $action1->setUseButton(true);
+    $action2->setUseButton(true);
 
     $this->datagrid->createModel();
 
@@ -68,26 +78,31 @@ class FiliadoList extends TPage
     $numero_inscricao = new TEntry('numero_da_inscricao');
     $nome             = new TEntry('nome_do_afiliado');
     $partido          = new TEntry('partido');
+    $situacao          = new TEntry('situacao');
 
     $id->exitOnEnter();
     $numero_inscricao->exitOnEnter();
     $nome->exitOnEnter();
     $partido->exitOnEnter();
+    $situacao->exitOnEnter();
 
     $id->setSize('100%');
     $numero_inscricao->setSize('100%');
     $nome->setSize('100%');
     $partido->setSize('100%');
+    $situacao->setSize('100%');
 
     $id->tabindex = -1;
     $numero_inscricao->tabindex = -1;
     $nome->tabindex = -1;
     $partido->tabindex = -1;
+    $situacao->tabindex = -1;
 
     $id->setExitAction(new TAction([$this, 'onSearch'], ['static' => '1']));
     $numero_inscricao->setExitAction(new TAction([$this, 'onSearch'], ['static' => '1']));
     $nome->setExitAction(new TAction([$this, 'onSearch'], ['static' => '1']));
     $partido->setExitAction(new TAction([$this, 'onSearch'], ['static' => '1']));
+    // $situacao->setExitAction(new TAction([$this, 'onSearch'], ['static' => '1']));
 
     $tr = new TElement('tr');
     $this->datagrid->prependRow($tr);
@@ -98,11 +113,13 @@ class FiliadoList extends TPage
     $tr->add(TElement::tag('td', $numero_inscricao));
     $tr->add(TElement::tag('td', $nome));
     $tr->add(TElement::tag('td', $partido));
+    $tr->add(TElement::tag('td', ''));
 
     $this->form->addField($id);
     $this->form->addField($numero_inscricao);
     $this->form->addField($nome);
     $this->form->addField($partido);
+    $this->form->addField($situacao);
 
     $this->form->setData(TSession::getValue(__CLASS__ . '_filter_data'));
 
@@ -115,13 +132,8 @@ class FiliadoList extends TPage
     $panel->add($this->form);
     $panel->addFooter($this->pageNavigation);
 
-    // $dropdown = new TDropDown('Exportar', 'fa:list');
-    // $dropdown->setButtonClass('btn btn-default waves-effect dropdown-toggle');
-    // $dropdown->addAction('Salvar como CSV', new TAction([$this, 'onExportCSV'], ['register_state' => 'false', 'static' => '1']), 'fa:table fa-fw blue');
-    // $dropdown->addAction('Salvar como PDF', new TAction([$this, 'onExportPDF'], ['register_state' => 'false', 'static' => '1']), 'far:file-pdf fa-fw red');
-    // $dropdown->addAction('Salvar como XML', new TAction([$this, 'onExportXML'], ['register_state' => 'false', 'static' => '1']), 'fa:code fa-fw green');
+    $panel->getBody()->style = 'overflow-x: auto';
 
-    // $panel->addHeaderWidget($dropdown);
     $panel->addHeaderActionLink('Novo', new TAction(['FiliadoForm', 'onClear'], ['register_state' => 'false']), 'fa:plus green');
 
     parent::add($panel);
