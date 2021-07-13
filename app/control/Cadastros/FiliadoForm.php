@@ -3,6 +3,7 @@
 use Adianti\Control\TAction;
 use Adianti\Control\TPage;
 use Adianti\Database\TTransaction;
+use Adianti\Validator\TRequiredValidator;
 use Adianti\Widget\Base\TElement;
 use Adianti\Widget\Base\TScript;
 use Adianti\Widget\Dialog\TMessage;
@@ -81,6 +82,8 @@ class FiliadoForm extends TPage
       'CANCELAMENTO AUTOMÁTICO POR SUSPENSÃO DE DIREITOS POLÍTICOS' => 'CANCELAMENTO AUTOMÁTICO POR SUSPENSÃO DE DIREITOS POLÍTICOS',
     ]);
 
+
+    // Propriedades dos campos
     $id->setEditable(false);
 
     $uf->setId('estado');
@@ -105,6 +108,16 @@ class FiliadoForm extends TPage
     $data_processamento->setSize('100%');
     $data_processamento->setMask('dd/mm/yyyy');
     $data_processamento->setDatabaseMask('yyyy-mm-dd');
+
+    // Validacao
+    $inscricao->addValidation('Nº da Inscrição', new TRequiredValidator);
+    $nome->addValidation('Nome', new TRequiredValidator);
+    $sigla_partido->addValidation('Sigla do Partido ', new TRequiredValidator);
+    $nome_partido->addValidation('Nome do Partido', new TRequiredValidator);
+    $zona_eleitoral->addValidation('Zona Eleitoral', new TRequiredValidator);
+    $data_filiacao->addValidation('Data de Filiação', new TRequiredValidator);
+    $situacao_registro->addValidation('Situação do Registro', new TRequiredValidator);
+    $tipo_registro->addValidation('Tipo do Registro', new TRequiredValidator);
 
     $this->form->appendPage('Dados básicos');
     $this->form->addFields([new TLabel('Id')], [$id], [new TLabel('Inscrição')], [$inscricao]);
@@ -228,20 +241,25 @@ class FiliadoForm extends TPage
     parent::add($this->form);
   }
 
-  public static function onSave($param)
+  public function onSave($param)
   {
-    try {
-      TTransaction::open('communication');
-      $filiado = new FiliadosPartido;
-      $filiado->fromArray($param);
-      $filiado->store();
+    try {      
 
+      $this->form->validate();
+
+      TTransaction::open('communication');  
+      
+      $filiado = new FiliadosPartido;
+      
+      $filiado->fromArray($param);
+
+      $filiado->store();
+      
       $data = new stdClass;
       $data->id = $filiado->id;
       TForm::sendData('form_filiado', $data);
 
       TScript::create('Template.closeRightPanel()');
-
 
       $pos_action = new TAction(['FiliadoList', 'onReload']);
 
@@ -263,10 +281,10 @@ class FiliadoForm extends TPage
     try {
       if (isset($param['key'])) {
         TTransaction::open('communication');
-
+        
         $filiado = new FiliadosPartido($param['key']);
-
-        $this->form->setData($filiado);
+        
+        $this->form->setData($filiado);        
 
         TScript::create("
           $('#estadoH').val('".$filiado->uf."');

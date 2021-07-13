@@ -69,10 +69,8 @@ class FiliadoList extends TPage
 
     $this->datagrid->createModel();
 
-
     $this->form = new TForm;
     $this->form->add($this->datagrid);
-
 
     $id               = new TEntry('id');
     $numero_inscricao = new TEntry('numero_da_inscricao');
@@ -126,7 +124,6 @@ class FiliadoList extends TPage
     $this->pageNavigation = new TPageNavigation;
     $this->pageNavigation->setAction(new TAction([$this, 'onReload']));
     $this->pageNavigation->enableCounters();
-
 
     $panel = new TPanelGroup('Filiados');
     $panel->add($this->form);
